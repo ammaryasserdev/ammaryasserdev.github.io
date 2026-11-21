@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>أداة سحب بيانات الكتب من الويب إلى ملف CSV بـ Python</title><meta name="description" content="سكريبت Python لسحب بيانات الكتب (Web Scraping) من صفحات الكتالوج وحفظها في ملف CSV منظم، مع الكود الكامل ونتائج تشغيل حقيقي."><style>*{box-sizing:border-box}html{background:#f4efec;color:#251f21}body{margin:0;font-family:Tahoma,Arial,sans-serif;font-size:15px;line-height:1.9}main{max-width:1040px;margin:24px auto;background:#fff;padding:36px;border-radius:16px}h1,h2{line-height:1.55;font-weight:600;margin:0 0 12px}h1{font-size:32px}h2{font-size:23px}p{margin:0 0 14px}.page-fact,.page-group-label,.page-caption,.page-secondary,footer{color:#585254}.page-fact{direction:ltr;text-align:right;font-size:14px}.page-intro{font-size:16px}.page-photos{margin:24px 0 8px}.page-photos img{display:block;width:100%;height:auto;max-height:600px;object-fit:contain;border-radius:10px}.page-caption{font-size:12px}.page-group{padding-top:28px;margin-top:28px;border-top:1px solid #eae9ea}.page-group-label{font-size:12px;margin-bottom:4px}.page-heading{display:flex;flex-wrap:wrap;gap:8px 16px;margin:24px 0 12px}.page-strong{font-weight:600}.page-secondary{font-size:13px}.page-steps{padding-inline-start:24px}.page-steps li{padding-inline-start:8px;margin-bottom:14px}pre{font:12px/1.65 ui-monospace,Consolas,monospace;direction:ltr;text-align:left;white-space:pre;overflow-x:auto;border:1px solid #eae9ea;border-radius:8px;padding:16px;margin:0 0 16px;background:#fafafa;max-width:100%}.csv-scroll{overflow-x:auto;border:1px solid #eae9ea;border-radius:8px;margin-bottom:20px}table{border-collapse:collapse;font:12px/1.7 ui-monospace,Consolas,monospace;min-width:100%;text-align:left}th,td{padding:8px 12px;white-space:nowrap;border-bottom:1px solid #eae9ea}th{font-weight:600;background:#f8f7f6}tr:last-child td{border-bottom:0}.csv-empty{color:#aaa}.page-callout{background:#f4efec;padding:18px;border-radius:8px;margin:20px 0}.page-callout>.page-strong{display:block;margin-bottom:6px}button{font:inherit;min-height:44px;padding:8px 18px;background:white;color:#251f21;border:1px solid #aaa;border-radius:6px;cursor:pointer;margin-bottom:16px}button:hover{background:#f4efec}button:focus-visible{outline:3px solid #73a89a;outline-offset:3px}footer{border-top:1px solid #eae9ea;margin-top:32px;padding-top:20px;font-size:12px}#copy-status{display:block;font-size:13px;color:#585254}@media(max-width:600px){body{font-size:14px}main{padding:22px;margin:0;border-radius:0}h1{font-size:26px}h2{font-size:21px}.page-intro{font-size:14px}}</style></head><body><main class="file-card" data-width="fluid" dir="rtl" lang="ar"><header class="page-header"><h1 class="page-title">أداة سحب بيانات الكتب من الويب إلى ملف CSV بـ Python</h1><p class="page-fact">Python / Requests / BeautifulSoup</p><p class="page-intro">سكريبت بايثون يجمع بيانات الكتب من صفحات كتالوج ويب (العنوان والسعر والتقييم وحالة التوفر) ويحفظها في ملف CSV نظيف ومنظم. صُمم لكل من يحتاج تحويل بيانات مبعثرة على صفحات موقع إلى جدول جاهز للتحليل أو التسليم.</p></header><div aria-label="رسم توضيحي" class="page-photos is-single" role="region"><img alt="رسم توضيحي: صفحة ويب فيها قائمة كتب تتحول إلى جدول CSV منظم" loading="eager" src="data:image/png;base64,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CCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQghAAACCUIAQAAAglCAEAAEIJQgAAgFCCEAAAIJQgBAAACCUIAQAAQglCAACAUIIQAAAglCAEAAAIJQgBAABCCUIAAIBQ/wdmW7Ti00giiAAAAABJRU5ErkJggg=="/></div><p class="page-caption">رسم توضيحي للفكرة، وليس لقطة من الأداة.</p><section aria-labelledby=":R4:" class="page-group"><hgroup class="page-group-head"><p class="page-group-label">الفكرة</p><h2 class="page-group-heading" id=":R4:">ماذا تفعل الأداة؟</h2></hgroup><div class="page-text"><p class="page-p">تزور الأداة صفحات الكتالوج صفحةً صفحة، تقرأ بطاقة كل كتاب، وتستخرج منها أربع حقول: العنوان، السعر، التقييم بالنجوم، وحالة التوفر. بعدها تكتب كل شيء في ملف CSV مرتب بأعمدة واضحة.</p><p class="page-p">السكريبت مُجرب فعليًا على موقع books.toscrape.com، وهو موقع مخصص أصلًا للتدريب على سحب البيانات، فالبيانات المعروضة هنا بيانات تدريب تجريبية وليست بيانات عميل. الكود معمول بطريقة عامة بحيث يتعدل بسهولة لأي موقع آخر يسمح بالسحب.</p></div></section><section aria-labelledby=":R5:" class="page-group"><hgroup class="page-group-head"><p class="page-group-label">القدرات</p><h2 class="page-group-heading" id=":R5:">المميزات الخمس</h2></hgroup><ol class="page-steps"><li><span>استخراج العنوان والسعر والتقييم بالنجوم وحالة التوفر لكل كتاب، مع تحويل التقييم من كلمة إلى رقم.</span></li><li><span>تتبع رابط «التالي» تلقائيًا للتنقل بين صفحات الكتالوج حتى عدد الصفحات المطلوب.</span></li><li><span>احترام الخادم: مهلة قابلة للضبط بين الطلبات (ثانية واحدة افتراضيًا) وعدد صفحات محدود، حتى لا يضغط السكربت على الموقع.</span></li><li><span>ملف CSV نظيف بترميز UTF-8 بأعمدة جاهزة للفتح في Excel أو pandas مباشرة.</span></li><li><span>ملخص تشغيل بعد كل مرة: عدد الصفحات والكتب، أقل وأعلى ومتوسط سعر، وتوزيع التقييمات.</span></li></ol></section><section aria-labelledby=":R6:" class="page-group"><hgroup class="page-group-head"><p class="page-group-label">قابل للنسخ والتعديل</p><h2 class="page-group-heading" id=":R6:">الكود المصدري الكامل</h2></hgroup><pre class="csv-code" dir="ltr">"""
+Books Scraper - collect book data from a web catalog into a clean CSV.
+
+What it does, step by step:
+  1. Downloads catalog pages from books.toscrape.com, a site built
+     specifically for practicing web scraping (scraping it is allowed).
+  2. Parses every book card on each page: title, price, star rating,
+     and availability.
+  3. Follows the "next" link automatically, so it can walk the whole
+     catalog or stop after a fixed number of pages.
+  4. Writes the results to a clean, ready-to-use CSV file.
+  5. Prints a short run summary: pages fetched, books collected,
+     price range, and rating distribution.
+
+The scraper is polite by default: it waits between requests and uses a
+modest page limit, so it never hammers the server.
+
+Usage:
+  python books_scraper.py                  # 5 pages -&gt; books.csv
+  python books_scraper.py --pages 3 --out books.csv --delay 1.0
+"""
+
+import argparse
+import csv
+import sys
+import time
+from urllib.parse import urljoin
+
+import requests
+from bs4 import BeautifulSoup
+
+BASE_URL = "https://books.toscrape.com/"
+
+# The site stores the star rating as a word in the CSS class,
+# e.g. &lt;p class="star-rating Three"&gt;.
+RATING_WORDS = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}
+
+HEADERS = {"User-Agent": "books-scraper-demo/1.0 (learning project)"}
+
+
+def parse_book(article):
+    """Extract one book's data from its HTML card."""
+    title = article.h3.a["title"].strip()
+
+    price_text = article.select_one(".price_color").get_text(strip=True)
+    price = float(price_text.lstrip("£"))
+
+    rating_class = article.select_one(".star-rating")["class"]
+    rating = next((RATING_WORDS[c] for c in rating_class if c in RATING_WORDS), None)
+
+    availability = article.select_one(".availability").get_text(strip=True)
+
+    return {
+        "title": title,
+        "price_gbp": price,
+        "rating": rating,
+        "availability": availability,
+    }
+
+
+def scrape_page(session, url):
+    """Scrape one catalog page. Returns (books, next_page_url_or_None)."""
+    response = session.get(url, timeout=15)
+    response.raise_for_status()
+    response.encoding = "utf-8"  # the site is UTF-8; don't let requests guess
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    books = [parse_book(a) for a in soup.select("article.product_pod")]
+
+    next_link = soup.select_one("li.next a")
+    next_url = urljoin(url, next_link["href"]) if next_link else None
+    return books, next_url
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Scrape book data from books.toscrape.com into a CSV file."
+    )
+    parser.add_argument("--pages", type=int, default=5,
+                        help="Maximum number of catalog pages to scrape (default: 5)")
+    parser.add_argument("--out", default="books.csv",
+                        help="Output CSV path (default: books.csv)")
+    parser.add_argument("--delay", type=float, default=1.0,
+                        help="Seconds to wait between requests (default: 1.0)")
+    args = parser.parse_args()
+
+    books = []
+    url = BASE_URL
+    pages_done = 0
+    started = time.time()
+
+    with requests.Session() as session:
+        session.headers.update(HEADERS)
+        while url and pages_done &lt; args.pages:
+            page_books, url = scrape_page(session, url)
+            books.extend(page_books)
+            pages_done += 1
+            print(f"Page {pages_done}: collected {len(page_books)} books "
+                  f"(total so far: {len(books)})")
+            if url and pages_done &lt; args.pages:
+                time.sleep(args.delay)  # be polite
+
+    with open(args.out, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["title", "price_gbp", "rating", "availability"])
+        writer.writeheader()
+        writer.writerows(books)
+
+    # ---- Run summary ----
+    prices = [b["price_gbp"] for b in books]
+    ratings = {stars: sum(1 for b in books if b["rating"] == stars) for stars in range(1, 6)}
+    elapsed = time.time() - started
+
+    print()
+    print("Run summary")
+    print("-----------")
+    print(f"Pages scraped : {pages_done}")
+    print(f"Books collected: {len(books)}")
+    print(f"Prices (GBP)  : min {min(prices):.2f} / max {max(prices):.2f} "
+          f"/ avg {sum(prices) / len(prices):.2f}")
+    print("Ratings       : " + ", ".join(f"{s}* = {ratings[s]}" for s in range(5, 0, -1)))
+    print(f"Elapsed       : {elapsed:.1f}s (delay between pages: {args.delay}s)")
+    print(f"Output        : {args.out} ({len(books)} rows + header)")
+
+
+if __name__ == "__main__":
+    sys.exit(main())</pre></section><section aria-labelledby=":R7:" class="page-group"><hgroup class="page-group-head"><p class="page-group-label">تشغيل حقيقي على بيانات تدريب</p><h2 class="page-group-heading" id=":R7:">من HTML خام إلى جدول منظم</h2></hgroup><div class="page-text"><p class="page-p">شغّلت السكربت على 5 صفحات من موقع books.toscrape.com فجمع 100 كتاب. هكذا تصل بيانات الكتاب الواحد من الموقع: كتلة HTML فيها كل التفاصيل مختلطة بعناصر العرض.</p></div><div class="page-heading"><span class="page-strong">البيانات الخام</span><span class="page-secondary">بطاقة كتاب واحدة كما تصل من الموقع</span></div><pre class="csv-code" dir="ltr">&lt;article class="product_pod"&gt;
+  &lt;p class="star-rating Three"&gt;
+    &lt;i class="icon-star"&gt;&lt;/i&gt;
+    &lt;i class="icon-star"&gt;&lt;/i&gt;
+    &lt;i class="icon-star"&gt;&lt;/i&gt;
+    &lt;i class="icon-star"&gt;&lt;/i&gt;
+    &lt;i class="icon-star"&gt;&lt;/i&gt;
+  &lt;/p&gt;
+  &lt;h3&gt;
+    &lt;a href="catalogue/a-light-in-the-attic_1000/index.html"
+       title="A Light in the Attic"&gt;A Light in the ...&lt;/a&gt;
+  &lt;/h3&gt;
+  &lt;div class="product_price"&gt;
+    &lt;p class="price_color"&gt;£51.77&lt;/p&gt;
+    &lt;p class="instock availability"&gt; In stock&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</pre><div class="page-text"><p class="page-p">وهكذا تصبح بعد الاستخراج: صف واحد نظيف في جدول، لكل حقل عمود واضح. هذه أول 10 صفوف من الملف الناتج:</p></div><div class="page-heading"><span class="page-strong">البيانات بعد التنظيم</span><span class="page-secondary">أول 10 صفوف من 100</span></div><div class="csv-scroll" dir="ltr"><table class="csv-table"><thead><tr><th>title</th><th>price_gbp</th><th>rating</th><th>availability</th></tr></thead><tbody><tr><td>A Light in the Attic</td><td>51.77</td><td>3</td><td>In stock</td></tr>
+<tr><td>Tipping the Velvet</td><td>53.74</td><td>1</td><td>In stock</td></tr>
+<tr><td>Soumission</td><td>50.1</td><td>1</td><td>In stock</td></tr>
+<tr><td>Sharp Objects</td><td>47.82</td><td>4</td><td>In stock</td></tr>
+<tr><td>Sapiens: A Brief History of Humankind</td><td>54.23</td><td>5</td><td>In stock</td></tr>
+<tr><td>The Requiem Red</td><td>22.65</td><td>1</td><td>In stock</td></tr>
+<tr><td>The Dirty Little Secrets of Getting Your Dream Job</td><td>33.34</td><td>4</td><td>In stock</td></tr>
+<tr><td>The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull</td><td>17.93</td><td>3</td><td>In stock</td></tr>
+<tr><td>The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics</td><td>22.6</td><td>4</td><td>In stock</td></tr>
+<tr><td>The Black Maria</td><td>52.15</td><td>1</td><td>In stock</td></tr></tbody></table></div><aside class="page-callout page-bar"><span class="page-strong">مصدر البيانات</span><span>books.toscrape.com موقع مبني خصيصًا للتدريب على سحب البيانات، وسحبه مسموح. البيانات المعروضة هنا بيانات تدريب تجريبية لعرض قدرات السكربت، وليست بيانات عميل أو مشروع تجاري.</span></aside><div class="page-heading"><span class="page-strong">ملخص التشغيل</span><span class="page-secondary">يُطبع مع كل تشغيل</span></div><pre class="csv-code csv-report" dir="ltr">Page 1: collected 20 books (total so far: 20)
+Page 2: collected 20 books (total so far: 40)
+Page 3: collected 20 books (total so far: 60)
+Page 4: collected 20 books (total so far: 80)
+Page 5: collected 20 books (total so far: 100)
+
+Run summary
+-----------
+Pages scraped : 5
+Books collected: 100
+Prices (GBP)  : min 10.16 / max 58.11 / avg 34.56
+Ratings       : 5* = 19, 4* = 18, 3* = 22, 2* = 19, 1* = 22
+Elapsed       : 5.8s (delay between pages: 1.0s)
+Output        : books.csv (100 rows + header)</pre></section><section aria-labelledby=":R8:" class="page-group"><hgroup class="page-group-head"><p class="page-group-label">سطر واحد</p><h2 class="page-group-heading" id=":R8:">طريقة التشغيل</h2></hgroup><div class="page-text"><p class="page-p">بعد تثبيت <bdi>requests</bdi> و<bdi>beautifulsoup4</bdi>، شغّل السكربت:</p></div><pre class="csv-code" dir="ltr">python books_scraper.py</pre><button id="copy-command" type="button">نسخ الأمر</button><span aria-live="polite" id="copy-status" role="status"></span><span class="page-visually-hidden" role="status"></span><div class="page-text"><p class="page-p">ويمكن ضبط عدد الصفحات واسم الملف والمهلة بين الطلبات:</p></div><pre class="csv-code" dir="ltr">python books_scraper.py --pages 3 --out books.csv --delay 1.0</pre></section><footer class="page-closing">الكود والبيانات والملخص من تشغيل حقيقي للسكربت على books.toscrape.com، 21 نوفمبر 2026. <a href="../">العودة إلى الأعمال</a></footer></main><script>document.getElementById('copy-command').addEventListener('click',async function(){const value='python books_scraper.py';try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value)}else{const t=document.createElement('textarea');t.value=value;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();const ok=document.execCommand('copy');t.remove();if(!ok)throw new Error('copy')}document.getElementById('copy-status').textContent='تم نسخ الأمر'}catch(e){document.getElementById('copy-status').textContent='تعذّر النسخ. حدّد الأمر وانسخه يدويًا.'}});</script></body></html>
